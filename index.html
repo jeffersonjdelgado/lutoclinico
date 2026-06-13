@@ -147,7 +147,7 @@
 </div>
 
 <script>
-var SYSTEM_PROMPT = 'Voce e o LutoClinico, um assistente clinico especializado em luto para terapeutas. Seu conhecimento e baseado no DSM-5-TR, CID-11, e literatura peer-reviewed sobre luto, perda e intervencoes clinicas. Responda sempre em portugues brasileiro. Seja preciso, clinico e util. Forneca informacoes baseadas em evidencias. Quando relevante, cite criterios diagnosticos, protocolos de tratamento e referencias clinicas.';
+var SYSTEM_PROMPT = 'Voce e o LutoClinico, um assistente clinico especializado em luto para terapeutas. Responda sempre em portugues brasileiro, de forma natural e conversacional, como um colega experiente explicando para outro profissional. Nao use markdown, nao use hashtags, nao use asteriscos, nao use listas com hifens. Escreva em paragrafos normais. Seja preciso, clinico e util. Baseie suas respostas no DSM-5-TR, CID-11 e literatura peer-reviewed.';
 
 var USERS = {'admin': 'luto2024'};
 var currentUser = null;
@@ -293,12 +293,29 @@ function renderMessage(role, content) {
   avatar.textContent = role === 'user' ? 'VC' : 'LC';
   var contentDiv = document.createElement('div');
   contentDiv.className = 'message-content';
-  var formatted = content
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .split('\n\n').join('</p><p>')
-    .split('\n').join('<br>');
-  contentDiv.innerHTML = '<p>' + formatted + '</p>';
+  var lines = content.split('\n');
+  var html = '';
+  var i = 0;
+  while (i < lines.length) {
+    var line = lines[i];
+    if (line.startsWith('### ')) {
+      html += '<h4 style="color:var(--accent2);font-family:Cormorant Garamond,serif;font-weight:400;font-size:15px;margin:12px 0 4px;">' + line.substring(4) + '</h4>';
+    } else if (line.startsWith('## ')) {
+      html += '<h3 style="color:var(--accent2);font-family:Cormorant Garamond,serif;font-weight:400;font-size:17px;margin:14px 0 6px;">' + line.substring(3) + '</h3>';
+    } else if (line.startsWith('# ')) {
+      html += '<h2 style="color:var(--accent2);font-family:Cormorant Garamond,serif;font-weight:300;font-size:20px;margin:16px 0 8px;">' + line.substring(2) + '</h2>';
+    } else if (line.startsWith('- ')) {
+      html += '<div style="padding:3px 0 3px 12px;border-left:2px solid var(--border);">' + line.substring(2) + '</div>';
+    } else if (line === '') {
+      html += '<br>';
+    } else {
+      line = line.replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--accent2);font-weight:400;">$1</strong>');
+      line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      html += '<p style="margin-bottom:8px;">' + line + '</p>';
+    }
+    i++;
+  }
+  contentDiv.innerHTML = html;
   div.appendChild(avatar);
   div.appendChild(contentDiv);
   messagesEl.appendChild(div);
