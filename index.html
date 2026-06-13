@@ -580,7 +580,7 @@ Quando relevante, cite critérios diagnósticos, protocolos de tratamento e refe
 
     try {
       const apiMessages = chats[currentChatId].messages.map(m => ({ role: m.role, content: m.content }));
-      const response = await fetch('/.netlify/functions/chat', {
+      const response = await /api/chat'/.netlify/functions/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
